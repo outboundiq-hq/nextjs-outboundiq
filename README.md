@@ -134,6 +134,19 @@ export async function GET(request: Request) {
 }
 ```
 
+## Testing Your Integration
+
+Verify your setup is working:
+
+```bash
+OUTBOUNDIQ_API_KEY=your_api_key npx outboundiq-test
+```
+
+This will:
+1. Verify your API key with OutboundIQ
+2. Show your project name, team, and plan
+3. Send test data to confirm tracking works
+
 ## Configuration
 
 All configuration is via environment variables:
