@@ -176,6 +176,55 @@ interface AxiosInstance {
             use: (onFulfilled?: (response: any) => any, onRejected?: (error: any) => any) => number;
         };
     };
+    get: <T = any>(url: string, config?: any) => Promise<{
+        data: T;
+        status: number;
+        headers: any;
+        config: any;
+    }>;
+    post: <T = any>(url: string, data?: any, config?: any) => Promise<{
+        data: T;
+        status: number;
+        headers: any;
+        config: any;
+    }>;
+    put: <T = any>(url: string, data?: any, config?: any) => Promise<{
+        data: T;
+        status: number;
+        headers: any;
+        config: any;
+    }>;
+    patch: <T = any>(url: string, data?: any, config?: any) => Promise<{
+        data: T;
+        status: number;
+        headers: any;
+        config: any;
+    }>;
+    delete: <T = any>(url: string, config?: any) => Promise<{
+        data: T;
+        status: number;
+        headers: any;
+        config: any;
+    }>;
+    head: <T = any>(url: string, config?: any) => Promise<{
+        data: T;
+        status: number;
+        headers: any;
+        config: any;
+    }>;
+    options: <T = any>(url: string, config?: any) => Promise<{
+        data: T;
+        status: number;
+        headers: any;
+        config: any;
+    }>;
+    request: <T = any>(config: any) => Promise<{
+        data: T;
+        status: number;
+        headers: any;
+        config: any;
+    }>;
+    defaults: any;
 }
 /**
  * Add OutboundIQ tracking to an existing axios instance
