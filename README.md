@@ -134,6 +134,57 @@ export async function GET(request: Request) {
 }
 ```
 
+## Axios Tracking
+
+While the instrumentation hook automatically tracks axios calls (via Node.js http patching), you can also explicitly track axios instances:
+
+### Add Tracking to Existing Axios Instance
+
+```typescript
+import axios from 'axios';
+import { addAxiosTracking } from '@outboundiq/nextjs';
+
+// Your existing axios instance
+const api = axios.create({ 
+  baseURL: 'https://api.stripe.com/v1',
+  headers: { 'Authorization': `Bearer ${process.env.STRIPE_SECRET}` }
+});
+
+// Add OutboundIQ tracking (doesn't remove existing interceptors)
+addAxiosTracking(api);
+
+// Now all calls are tracked!
+const response = await api.get('/charges');
+```
+
+### Create a Pre-Tracked Axios Instance
+
+```typescript
+import axios from 'axios';
+import { createTrackedAxios } from '@outboundiq/nextjs';
+
+// Create a new axios instance with tracking built-in
+const api = createTrackedAxios(axios, {
+  baseURL: 'https://api.twilio.com',
+});
+
+// All calls automatically tracked
+await api.post('/messages', { Body: 'Hello!' });
+```
+
+### With User Context
+
+```typescript
+import { addAxiosTracking } from '@outboundiq/nextjs';
+
+addAxiosTracking(api, {
+  userContext: {
+    userId: session.user.id,
+    context: 'authenticated',
+  }
+});
+```
+
 ## Testing Your Integration
 
 Verify your setup is working:
