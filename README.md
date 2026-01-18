@@ -25,7 +25,7 @@ pnpm add @outboundiq/nextjs
 ### 1. Add Environment Variables
 
 ```env
-OUTBOUNDIQ_API_KEY=your-api-key
+OUTBOUNDIQ_KEY=your-api-key
 OUTBOUNDIQ_PROJECT_ID=your-project-id
 ```
 
@@ -190,7 +190,7 @@ addAxiosTracking(api, {
 Verify your setup is working:
 
 ```bash
-OUTBOUNDIQ_API_KEY=your_api_key npx outboundiq-test
+OUTBOUNDIQ_KEY=your_api_key npx outboundiq-test
 ```
 
 This will:
@@ -204,7 +204,7 @@ All configuration is via environment variables:
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `OUTBOUNDIQ_API_KEY` | Yes | Your OutboundIQ API key |
+| `OUTBOUNDIQ_KEY` | Yes | Your OutboundIQ API key |
 | `OUTBOUNDIQ_PROJECT_ID` | Yes | Your OutboundIQ project ID |
 | `OUTBOUNDIQ_ENDPOINT` | No | Custom ingest endpoint |
 | `OUTBOUNDIQ_DEBUG` | No | Enable debug logging (`true`/`false`) |

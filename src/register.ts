@@ -22,11 +22,11 @@ import { register as registerNode, setUserContextResolver } from '@outboundiq/co
 import { getCurrentUserContext } from './context/request-context';
 
 // Get config from environment
-const apiKey = process.env.OUTBOUNDIQ_API_KEY;
+const apiKey = process.env.OUTBOUNDIQ_KEY;
 
 if (!apiKey) {
   console.warn(
-    '[OutboundIQ] Missing OUTBOUNDIQ_API_KEY environment variable. ' +
+    '[OutboundIQ] Missing OUTBOUNDIQ_KEY environment variable. ' +
     'Tracking will be disabled.'
   );
 } else {

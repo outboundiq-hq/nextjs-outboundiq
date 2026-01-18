@@ -7,10 +7,10 @@ function ensureInitialized() {
   if (isInitialized || getClient()) {
     return true;
   }
-  const apiKey = process.env.OUTBOUNDIQ_API_KEY;
+  const apiKey = process.env.OUTBOUNDIQ_KEY;
   const endpoint = process.env.OUTBOUNDIQ_ENDPOINT;
   if (!apiKey) {
-    console.warn("[OutboundIQ] Missing OUTBOUNDIQ_API_KEY environment variable");
+    console.warn("[OutboundIQ] Missing OUTBOUNDIQ_KEY environment variable");
     return false;
   }
   init({
@@ -27,7 +27,7 @@ function ensureInitialized() {
 }
 function initEdge(config) {
   if (isInitialized) return;
-  const apiKey = config?.apiKey || process.env.OUTBOUNDIQ_API_KEY;
+  const apiKey = config?.apiKey || process.env.OUTBOUNDIQ_KEY;
   if (!apiKey) {
     console.warn("[OutboundIQ] Missing API key for edge runtime");
     return;
@@ -93,7 +93,7 @@ function getBaseUrl() {
   return endpoint.replace("/metric", "");
 }
 async function recommend(serviceName, options = {}) {
-  const apiKey = process.env.OUTBOUNDIQ_API_KEY;
+  const apiKey = process.env.OUTBOUNDIQ_KEY;
   if (!apiKey) {
     console.warn("[OutboundIQ] Missing API key for recommend()");
     return null;
@@ -120,7 +120,7 @@ async function recommend(serviceName, options = {}) {
   }
 }
 async function providerStatus(providerSlug, options = {}) {
-  const apiKey = process.env.OUTBOUNDIQ_API_KEY;
+  const apiKey = process.env.OUTBOUNDIQ_KEY;
   if (!apiKey) {
     console.warn("[OutboundIQ] Missing API key for providerStatus()");
     return null;
@@ -145,7 +145,7 @@ async function providerStatus(providerSlug, options = {}) {
   }
 }
 async function endpointStatus(endpointSlug, options = {}) {
-  const apiKey = process.env.OUTBOUNDIQ_API_KEY;
+  const apiKey = process.env.OUTBOUNDIQ_KEY;
   if (!apiKey) {
     console.warn("[OutboundIQ] Missing API key for endpointStatus()");
     return null;

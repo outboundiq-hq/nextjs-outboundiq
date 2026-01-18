@@ -12,7 +12,7 @@
  * 
  * 2. Add environment variables:
  * ```env
- * OUTBOUNDIQ_API_KEY=your-api-key
+ * OUTBOUNDIQ_KEY=your-api-key
  * OUTBOUNDIQ_PROJECT_ID=your-project-id
  * ```
  * 

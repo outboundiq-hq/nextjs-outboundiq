@@ -33,11 +33,11 @@ function ensureInitialized(): boolean {
     return true;
   }
 
-  const apiKey = process.env.OUTBOUNDIQ_API_KEY;
+  const apiKey = process.env.OUTBOUNDIQ_KEY;
   const endpoint = process.env.OUTBOUNDIQ_ENDPOINT;
 
   if (!apiKey) {
-    console.warn('[OutboundIQ] Missing OUTBOUNDIQ_API_KEY environment variable');
+    console.warn('[OutboundIQ] Missing OUTBOUNDIQ_KEY environment variable');
     return false;
   }
 
@@ -61,7 +61,7 @@ function ensureInitialized(): boolean {
 export function initEdge(config?: Partial<OutboundIQConfig>): void {
   if (isInitialized) return;
 
-  const apiKey = config?.apiKey || process.env.OUTBOUNDIQ_API_KEY;
+  const apiKey = config?.apiKey || process.env.OUTBOUNDIQ_KEY;
 
   if (!apiKey) {
     console.warn('[OutboundIQ] Missing API key for edge runtime');
@@ -272,7 +272,7 @@ export async function recommend(
   serviceName: string,
   options: SdkMethodOptions = {}
 ): Promise<RecommendResponse | null> {
-  const apiKey = process.env.OUTBOUNDIQ_API_KEY;
+  const apiKey = process.env.OUTBOUNDIQ_KEY;
   if (!apiKey) {
     console.warn('[OutboundIQ] Missing API key for recommend()');
     return null;
@@ -324,7 +324,7 @@ export async function providerStatus(
   providerSlug: string,
   options: SdkMethodOptions = {}
 ): Promise<ProviderStatusResponse | null> {
-  const apiKey = process.env.OUTBOUNDIQ_API_KEY;
+  const apiKey = process.env.OUTBOUNDIQ_KEY;
   if (!apiKey) {
     console.warn('[OutboundIQ] Missing API key for providerStatus()');
     return null;
@@ -374,7 +374,7 @@ export async function endpointStatus(
   endpointSlug: string,
   options: SdkMethodOptions = {}
 ): Promise<EndpointStatusResponse | null> {
-  const apiKey = process.env.OUTBOUNDIQ_API_KEY;
+  const apiKey = process.env.OUTBOUNDIQ_KEY;
   if (!apiKey) {
     console.warn('[OutboundIQ] Missing API key for endpointStatus()');
     return null;

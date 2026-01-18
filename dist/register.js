@@ -21,10 +21,10 @@ function setCurrentUserContext(userContext) {
 }
 
 // src/register.ts
-var apiKey = process.env.OUTBOUNDIQ_API_KEY;
+var apiKey = process.env.OUTBOUNDIQ_KEY;
 if (!apiKey) {
   console.warn(
-    "[OutboundIQ] Missing OUTBOUNDIQ_API_KEY environment variable. Tracking will be disabled."
+    "[OutboundIQ] Missing OUTBOUNDIQ_KEY environment variable. Tracking will be disabled."
   );
 } else {
   core.init({
