@@ -1,23 +1,11 @@
 # @outboundiq/nextjs
 
-OutboundIQ SDK for Next.js - Automatic tracking of all outbound API calls with zero effort.
-
-## Features
-
-- 🔌 **Plug and Play** - Just install, add env vars, and forget
-- 🚀 **Non-blocking** - Never slows down your app
-- 📡 **Universal** - Tracks fetch, axios, got, and any HTTP client
-- 👤 **User Context** - Know who made each API call
-- 🌐 **Full Coverage** - Works in Server Components, API Routes, Server Actions, Middleware
+Next.js integration for OutboundIQ - Third-party API monitoring and analytics.
 
 ## Installation
 
 ```bash
 npm install @outboundiq/nextjs
-# or
-yarn add @outboundiq/nextjs
-# or
-pnpm add @outboundiq/nextjs
 ```
 
 ## Quick Start
@@ -26,12 +14,11 @@ pnpm add @outboundiq/nextjs
 
 ```env
 OUTBOUNDIQ_KEY=your-api-key
-OUTBOUNDIQ_PROJECT_ID=your-project-id
 ```
 
 ### 2. Create instrumentation.ts
 
-Create `instrumentation.ts` in your project root (next to `package.json`):
+Create `instrumentation.ts` in your project root:
 
 ```typescript
 export async function register() {
@@ -41,10 +28,10 @@ export async function register() {
 }
 ```
 
-### 3. Enable Instrumentation in next.config.js
+### 3. Enable Instrumentation
 
 ```javascript
-/** @type {import('next').NextConfig} */
+// next.config.js
 const nextConfig = {
   experimental: {
     instrumentationHook: true,
@@ -56,9 +43,22 @@ module.exports = nextConfig;
 
 **Done!** All outbound API calls are now automatically tracked.
 
+## Configuration
+
+```bash
+# Required - your API key from OutboundIQ dashboard
+OUTBOUNDIQ_KEY=your-api-key
+
+# Custom endpoint URL (optional)
+OUTBOUNDIQ_URL=https://agent.outboundiq.dev/api/metric
+
+# Enable debug logging (optional)
+OUTBOUNDIQ_DEBUG=true
+```
+
 ## User Context (Optional)
 
-To track which user made each API call, add middleware:
+Track which user made each API call:
 
 ```typescript
 // middleware.ts
@@ -66,7 +66,6 @@ import { withOutboundIQ } from '@outboundiq/nextjs/middleware';
 import { NextResponse } from 'next/server';
 
 export default withOutboundIQ(async (request) => {
-  // Your existing middleware logic
   return NextResponse.next();
 });
 
@@ -88,190 +87,24 @@ export default withOutboundIQ(async (request) => {
     const token = await getToken({ req: request });
     return token ? {
       userId: token.sub,
-      userType: 'User',
       context: 'authenticated',
     } : null;
   },
 });
 ```
-
-### With Clerk
-
-```typescript
-import { withOutboundIQ } from '@outboundiq/nextjs/middleware';
-import { clerkMiddleware, getAuth } from '@clerk/nextjs/server';
-
-export default withOutboundIQ(async (request) => {
-  return clerkMiddleware()(request);
-}, {
-  getUserContext: async (request) => {
-    const { userId } = getAuth(request);
-    return userId ? {
-      userId,
-      context: 'authenticated',
-    } : null;
-  },
-});
-```
-
-## Edge Runtime
-
-For Edge API routes and middleware, use the edge-specific imports:
-
-```typescript
-// app/api/edge-route/route.ts
-import { initEdge, trackFetch } from '@outboundiq/nextjs/edge';
-
-export const runtime = 'edge';
-
-export async function GET(request: Request) {
-  initEdge(); // Initialize once
-
-  // Use trackFetch for manual tracking in edge
-  const response = await trackFetch('https://api.example.com/data');
-  
-  return Response.json(await response.json());
-}
-```
-
-## Axios Tracking
-
-While the instrumentation hook automatically tracks axios calls (via Node.js http patching), you can also explicitly track axios instances:
-
-### Add Tracking to Existing Axios Instance
-
-```typescript
-import axios from 'axios';
-import { addAxiosTracking } from '@outboundiq/nextjs';
-
-// Your existing axios instance
-const api = axios.create({ 
-  baseURL: 'https://api.stripe.com/v1',
-  headers: { 'Authorization': `Bearer ${process.env.STRIPE_SECRET}` }
-});
-
-// Add OutboundIQ tracking (doesn't remove existing interceptors)
-addAxiosTracking(api);
-
-// Now all calls are tracked!
-const response = await api.get('/charges');
-```
-
-### Create a Pre-Tracked Axios Instance
-
-```typescript
-import axios from 'axios';
-import { createTrackedAxios } from '@outboundiq/nextjs';
-
-// Create a new axios instance with tracking built-in
-const api = createTrackedAxios(axios, {
-  baseURL: 'https://api.twilio.com',
-});
-
-// All calls automatically tracked
-await api.post('/messages', { Body: 'Hello!' });
-```
-
-### With User Context
-
-```typescript
-import { addAxiosTracking } from '@outboundiq/nextjs';
-
-addAxiosTracking(api, {
-  userContext: {
-    userId: session.user.id,
-    context: 'authenticated',
-  }
-});
-```
-
-## Testing Your Integration
-
-Verify your setup is working:
-
-```bash
-OUTBOUNDIQ_KEY=your_api_key npx outboundiq-test
-```
-
-This will:
-1. Verify your API key with OutboundIQ
-2. Show your project name, team, and plan
-3. Send test data to confirm tracking works
-
-## Configuration
-
-All configuration is via environment variables:
-
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `OUTBOUNDIQ_KEY` | Yes | Your OutboundIQ API key |
-| `OUTBOUNDIQ_PROJECT_ID` | Yes | Your OutboundIQ project ID |
-| `OUTBOUNDIQ_ENDPOINT` | No | Custom ingest endpoint |
-| `OUTBOUNDIQ_DEBUG` | No | Enable debug logging (`true`/`false`) |
-| `OUTBOUNDIQ_BATCH_SIZE` | No | Batch size before flush (default: 10) |
-| `OUTBOUNDIQ_FLUSH_INTERVAL` | No | Flush interval in ms (default: 5000) |
 
 ## What Gets Tracked
 
 All outbound HTTP requests from:
-
-- ✅ Server Components (`fetch()`)
-- ✅ API Routes (`fetch()`, axios, got, etc.)
-- ✅ Server Actions (`fetch()`)
-- ✅ Route Handlers (`fetch()`)
-- ✅ Any library using Node.js http/https
+- ✅ Server Components
+- ✅ API Routes
+- ✅ Server Actions
+- ✅ Route Handlers
 
 **Not tracked:**
 - ❌ Client-side browser requests (intentional)
-- ❌ Requests to OutboundIQ itself (intentional)
-
-## API Reference
-
-### `withOutboundIQ(middleware, options?)`
-
-Wrap your middleware to inject user context.
-
-```typescript
-withOutboundIQ(
-  middleware: (request: NextRequest) => Promise<NextResponse>,
-  options?: {
-    getUserContext?: (request: NextRequest) => Promise<UserContext | null>;
-    excludePatterns?: (string | RegExp)[];
-  }
-)
-```
-
-### `track(call)`
-
-Manually track an API call (rarely needed).
-
-```typescript
-import { track } from '@outboundiq/nextjs';
-
-track({
-  method: 'POST',
-  url: 'https://api.example.com/data',
-  statusCode: 200,
-  duration: 150,
-  userContext: { userId: '123', context: 'authenticated' },
-});
-```
-
-### `setUserContext(context)`
-
-Set user context for subsequent calls in the current request.
-
-```typescript
-import { setUserContext } from '@outboundiq/nextjs';
-
-setUserContext({
-  userId: '123',
-  userType: 'Admin',
-  context: 'authenticated',
-});
-```
+- ❌ Requests to OutboundIQ itself
 
 ## License
 
 MIT
-

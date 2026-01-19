@@ -29,7 +29,7 @@ if (!apiKey) {
 } else {
   core.init({
     apiKey,
-    endpoint: process.env.OUTBOUNDIQ_ENDPOINT,
+    endpoint: process.env.OUTBOUNDIQ_URL,
     debug: process.env.OUTBOUNDIQ_DEBUG === "true",
     batchSize: parseInt(process.env.OUTBOUNDIQ_BATCH_SIZE || "10", 10),
     flushInterval: parseInt(process.env.OUTBOUNDIQ_FLUSH_INTERVAL || "5000", 10)

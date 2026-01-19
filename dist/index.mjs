@@ -98,7 +98,7 @@ function ensureInitialized() {
     return true;
   }
   const apiKey = process.env.OUTBOUNDIQ_KEY;
-  const endpoint = process.env.OUTBOUNDIQ_ENDPOINT;
+  const endpoint = process.env.OUTBOUNDIQ_URL;
   if (!apiKey) {
     console.warn("[OutboundIQ] Missing OUTBOUNDIQ_KEY environment variable");
     return false;
@@ -124,7 +124,7 @@ function initEdge(config) {
   }
   init({
     apiKey,
-    endpoint: config?.endpoint || process.env.OUTBOUNDIQ_ENDPOINT,
+    endpoint: config?.endpoint || process.env.OUTBOUNDIQ_URL,
     debug: config?.debug || process.env.OUTBOUNDIQ_DEBUG === "true",
     // Smaller batches for edge (short-lived)
     batchSize: config?.batchSize || 5,
@@ -179,7 +179,7 @@ function createTrackedFetch(userContext) {
   };
 }
 function getBaseUrl() {
-  const endpoint = process.env.OUTBOUNDIQ_ENDPOINT || "https://agent.outboundiq.dev/api/metric";
+  const endpoint = process.env.OUTBOUNDIQ_URL || "https://agent.outboundiq.dev/api/metric";
   return endpoint.replace("/metric", "");
 }
 async function recommend(serviceName, options = {}) {

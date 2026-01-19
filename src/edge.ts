@@ -34,7 +34,7 @@ function ensureInitialized(): boolean {
   }
 
   const apiKey = process.env.OUTBOUNDIQ_KEY;
-  const endpoint = process.env.OUTBOUNDIQ_ENDPOINT;
+  const endpoint = process.env.OUTBOUNDIQ_URL;
 
   if (!apiKey) {
     console.warn('[OutboundIQ] Missing OUTBOUNDIQ_KEY environment variable');
@@ -70,7 +70,7 @@ export function initEdge(config?: Partial<OutboundIQConfig>): void {
 
   init({
     apiKey,
-    endpoint: config?.endpoint || process.env.OUTBOUNDIQ_ENDPOINT,
+    endpoint: config?.endpoint || process.env.OUTBOUNDIQ_URL,
     debug: config?.debug || process.env.OUTBOUNDIQ_DEBUG === 'true',
     // Smaller batches for edge (short-lived)
     batchSize: config?.batchSize || 5,
@@ -246,7 +246,7 @@ interface EndpointStatusResponse {
  */
 function getBaseUrl(): string {
   // Use the main API, not the metric endpoint
-  const endpoint = process.env.OUTBOUNDIQ_ENDPOINT || 'https://agent.outboundiq.dev/api/metric';
+  const endpoint = process.env.OUTBOUNDIQ_URL || 'https://agent.outboundiq.dev/api/metric';
   // Convert metric endpoint to base API URL
   // https://agent.outboundiq.dev/api/metric → https://agent.outboundiq.dev/api
   return endpoint.replace('/metric', '');
