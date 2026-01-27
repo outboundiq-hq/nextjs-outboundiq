@@ -6,7 +6,7 @@
  */
 
 import { AsyncLocalStorage } from 'async_hooks';
-import type { UserContext } from '@outboundiq/core';
+import type { UserContext } from '@outbound_iq/core';
 
 /**
  * Request context stored for each request

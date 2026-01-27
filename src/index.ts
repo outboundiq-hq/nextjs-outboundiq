@@ -51,14 +51,14 @@ export {
   type OutboundIQConfig,
   type UserContext,
   type ApiCall,
-} from '@outboundiq/core';
+} from '@outbound_iq/core';
 
 // Re-export node patching (for manual patching if needed)
 export {
   patchNodeHttp,
   unpatchNodeHttp,
   setUserContextResolver,
-} from '@outboundiq/core/node';
+} from '@outbound_iq/core/node';
 
 // Export context utilities
 export {
@@ -97,10 +97,10 @@ export {
  */
 export function withUserContext<T extends (...args: any[]) => any>(
   handler: T,
-  userContext: import('@outboundiq/core').UserContext
+  userContext: import('@outbound_iq/core').UserContext
 ): T {
   return (async (...args: Parameters<T>) => {
-    const { setUserContext } = await import('@outboundiq/core');
+    const { setUserContext } = await import('@outbound_iq/core');
     setUserContext(userContext);
     try {
       return await handler(...args);

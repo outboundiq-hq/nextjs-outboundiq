@@ -21,7 +21,7 @@
  * ```
  */
 
-import { init, track, getClient, flush as coreFlush, type OutboundIQConfig, type UserContext } from '@outboundiq/core';
+import { init, track, getClient, flush as coreFlush, type OutboundIQConfig, type UserContext } from '@outbound_iq/core';
 
 let isInitialized = false;
 
@@ -155,8 +155,8 @@ export function createTrackedFetch(userContext: UserContext) {
 }
 
 // Re-export useful functions
-export { track, flush, setUserContext } from '@outboundiq/core';
-export type { UserContext } from '@outboundiq/core';
+export { track, flush, setUserContext } from '@outbound_iq/core';
+export type { UserContext } from '@outbound_iq/core';
 
 // ============================================
 // SDK Methods: recommend, providerStatus, endpointStatus

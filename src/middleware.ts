@@ -23,7 +23,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import type { UserContext } from '@outboundiq/core';
+import type { UserContext } from '@outbound_iq/core';
 
 /**
  * Options for the OutboundIQ middleware wrapper

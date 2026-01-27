@@ -17,8 +17,8 @@
  * ```
  */
 
-import { init, getClient, setUserContext } from '@outboundiq/core';
-import { register as registerNode, setUserContextResolver } from '@outboundiq/core/node';
+import { init, getClient, setUserContext } from '@outbound_iq/core';
+import { register as registerNode, setUserContextResolver } from '@outbound_iq/core/node';
 import { getCurrentUserContext } from './context/request-context';
 
 // Get config from environment

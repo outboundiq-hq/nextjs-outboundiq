@@ -16,7 +16,7 @@
  */
 
 import type { NextRequest } from 'next/server';
-import type { UserContext } from '@outboundiq/core';
+import type { UserContext } from '@outbound_iq/core';
 
 /**
  * Create a user context resolver for Clerk
