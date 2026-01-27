@@ -1,5 +1,5 @@
 {
-  "name": "@outboundiq/nextjs",
+  "name": "@outbound_iq/nextjs",
   "version": "0.1.0",
   "description": "OutboundIQ SDK for Next.js - Automatic tracking of all outbound API calls",
   "main": "./dist/index.js",
@@ -52,13 +52,13 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/outboundiq-hq/nextjs-outboundiq.git"
+    "url": "git+https://github.com/outboundiq-hq/nextjs-outboundiq.git"
   },
   "peerDependencies": {
     "next": ">=13.0.0"
   },
   "dependencies": {
-    "@outboundiq/core": "^0.1.0"
+    "@outbound_iq/core": "^0.1.0"
   },
   "devDependencies": {
     "@types/node": "^20.10.0",
@@ -71,4 +71,3 @@
     "node": ">=18.0.0"
   }
 }
-
