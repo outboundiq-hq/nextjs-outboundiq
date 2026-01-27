@@ -58,7 +58,7 @@
     "next": ">=13.0.0"
   },
   "dependencies": {
-    "@outboundiq/core": "file:../outboundiq-js"
+    "@outboundiq/core": "^0.1.0"
   },
   "devDependencies": {
     "@types/node": "^20.10.0",
