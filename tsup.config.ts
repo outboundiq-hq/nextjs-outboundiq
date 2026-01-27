@@ -14,6 +14,6 @@ export default defineConfig({
   clean: true,
   treeshake: true,
   minify: false,
-  external: ['next', 'react', '@outboundiq/core'],
+  external: ['next', 'react', '@outbound_iq/core'],
 });
 
