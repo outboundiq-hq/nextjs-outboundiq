@@ -339,8 +339,8 @@ function addAxiosTracking(axiosInstance, options) {
     async (response) => {
       const duration = response.config.metadata?.startTime ? performance.now() - response.config.metadata.startTime : 0;
       const url = buildAxiosUrl(response.config);
-      const requestHeaders = response.config.headers || {};
-      const responseHeaders = response.headers || {};
+      const requestHeaders = normalizeAxiosHeaders(response.config.headers);
+      const responseHeaders = normalizeAxiosHeaders(response.headers);
       track({
         method: (response.config.method || "GET").toUpperCase(),
         url,
@@ -358,8 +358,8 @@ function addAxiosTracking(axiosInstance, options) {
     async (error) => {
       const duration = error.config?.metadata?.startTime ? performance.now() - error.config.metadata.startTime : 0;
       const url = error.config ? buildAxiosUrl(error.config) : "unknown";
-      const requestHeaders = error.config?.headers || {};
-      const responseHeaders = error.response?.headers || {};
+      const requestHeaders = normalizeAxiosHeaders(error.config?.headers);
+      const responseHeaders = normalizeAxiosHeaders(error.response?.headers);
       track({
         method: (error.config?.method || "GET").toUpperCase(),
         url,
@@ -376,6 +376,32 @@ function addAxiosTracking(axiosInstance, options) {
       return Promise.reject(error);
     }
   );
+}
+function normalizeAxiosHeaders(headers) {
+  if (!headers) return {};
+  const h = headers;
+  if (typeof h.toJSON === "function") {
+    const obj = h.toJSON(true);
+    if (obj && typeof obj === "object" && !Array.isArray(obj)) {
+      const out = {};
+      for (const [k, v] of Object.entries(obj)) {
+        if (v != null && typeof v === "string") out[k] = v;
+        else if (v != null) out[k] = String(v);
+      }
+      return out;
+    }
+  }
+  if (headers instanceof Headers) {
+    const out = {};
+    headers.forEach((value, key) => {
+      out[key] = value;
+    });
+    return out;
+  }
+  if (typeof headers === "object" && !Array.isArray(headers)) {
+    return headers;
+  }
+  return {};
 }
 function buildAxiosUrl(config) {
   const baseURL = config.baseURL || "";

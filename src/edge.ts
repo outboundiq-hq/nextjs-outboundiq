@@ -593,8 +593,8 @@ export function addAxiosTracking(
         : 0;
 
       const url = buildAxiosUrl(response.config);
-      const requestHeaders = (response.config.headers as Record<string, string>) || {};
-      const responseHeaders = (response.headers as Record<string, string>) || {};
+      const requestHeaders = normalizeAxiosHeaders(response.config.headers);
+      const responseHeaders = normalizeAxiosHeaders(response.headers);
 
       track({
         method: (response.config.method || 'GET').toUpperCase(),
@@ -619,8 +619,8 @@ export function addAxiosTracking(
         : 0;
 
       const url = error.config ? buildAxiosUrl(error.config) : 'unknown';
-      const requestHeaders = (error.config?.headers as Record<string, string>) || {};
-      const responseHeaders = (error.response?.headers as Record<string, string>) || {};
+      const requestHeaders = normalizeAxiosHeaders(error.config?.headers);
+      const responseHeaders = normalizeAxiosHeaders(error.response?.headers);
 
       track({
         method: (error.config?.method || 'GET').toUpperCase(),
@@ -640,6 +640,38 @@ export function addAxiosTracking(
       return Promise.reject(error);
     }
   );
+}
+
+/**
+ * Normalize Axios headers to a plain Record<string, string>.
+ * Axios uses AxiosHeaders which doesn't serialize with Object.entries correctly;
+ * toJSON(true) returns a plain object with string values.
+ */
+function normalizeAxiosHeaders(headers: unknown): Record<string, string> {
+  if (!headers) return {};
+  const h = headers as { toJSON?: (asStrings?: boolean) => Record<string, string> };
+  if (typeof h.toJSON === 'function') {
+    const obj = h.toJSON(true);
+    if (obj && typeof obj === 'object' && !Array.isArray(obj)) {
+      const out: Record<string, string> = {};
+      for (const [k, v] of Object.entries(obj)) {
+        if (v != null && typeof v === 'string') out[k] = v;
+        else if (v != null) out[k] = String(v);
+      }
+      return out;
+    }
+  }
+  if (headers instanceof Headers) {
+    const out: Record<string, string> = {};
+    headers.forEach((value, key) => {
+      out[key] = value;
+    });
+    return out;
+  }
+  if (typeof headers === 'object' && !Array.isArray(headers)) {
+    return headers as Record<string, string>;
+  }
+  return {};
 }
 
 /**
