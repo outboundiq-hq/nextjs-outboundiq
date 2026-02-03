@@ -1,5 +1,5 @@
-import { OutboundIQConfig, UserContext } from '@outboundiq/core';
-export { UserContext, flush, setUserContext, track } from '@outboundiq/core';
+import { OutboundIQConfig, UserContext } from '@outbound_iq/core';
+export { UserContext, flush, setUserContext, track } from '@outbound_iq/core';
 
 /**
  * @outboundiq/nextjs/edge
@@ -31,7 +31,8 @@ export { UserContext, flush, setUserContext, track } from '@outboundiq/core';
 declare function initEdge(config?: Partial<OutboundIQConfig>): void;
 /**
  * Track a fetch request manually
- * Auto-initializes SDK if not already done
+ * Auto-initializes SDK if not already done.
+ * Captures request/response headers and bodies for OutboundIQ.
  */
 declare function trackFetch(input: RequestInfo | URL, init?: RequestInit & {
     userContext?: UserContext;

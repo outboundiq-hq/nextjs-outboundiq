@@ -1,7 +1,7 @@
 'use strict';
 
-var core = require('@outboundiq/core');
-var node = require('@outboundiq/core/node');
+var core = require('@outbound_iq/core');
+var node = require('@outbound_iq/core/node');
 var async_hooks = require('async_hooks');
 
 // src/register.ts

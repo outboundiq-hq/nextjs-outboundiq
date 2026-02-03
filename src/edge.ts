@@ -21,7 +21,16 @@
  * ```
  */
 
-import { init, track, getClient, flush as coreFlush, type OutboundIQConfig, type UserContext } from '@outbound_iq/core';
+import {
+  init,
+  track,
+  getClient,
+  flush as coreFlush,
+  sanitizeHeaders,
+  safeStringify,
+  type OutboundIQConfig,
+  type UserContext,
+} from '@outbound_iq/core';
 
 let isInitialized = false;
 
@@ -81,23 +90,100 @@ export function initEdge(config?: Partial<OutboundIQConfig>): void {
   isInitialized = true;
 }
 
+const BODY_MAX_LENGTH = 10000;
+
+/** Extract request headers from input and init */
+function extractRequestHeaders(
+  input: RequestInfo | URL,
+  init?: RequestInit
+): Record<string, string> {
+  const headers: Record<string, string> = {};
+  if (init?.headers) {
+    if (init.headers instanceof Headers) {
+      init.headers.forEach((value, key) => {
+        headers[key] = value;
+      });
+    } else if (Array.isArray(init.headers)) {
+      init.headers.forEach(([key, value]) => {
+        headers[key] = value;
+      });
+    } else {
+      Object.assign(headers, init.headers);
+    }
+  }
+  if (input instanceof Request) {
+    input.headers.forEach((value, key) => {
+      if (!headers[key]) headers[key] = value;
+    });
+  }
+  return headers;
+}
+
+/** Safely get request body string from init (for tracking) */
+function getRequestBodyFromInit(init?: RequestInit): string | null {
+  if (!init?.body) return null;
+  try {
+    if (typeof init.body === 'string') {
+      return init.body.length > BODY_MAX_LENGTH
+        ? init.body.substring(0, BODY_MAX_LENGTH) + '...[truncated]'
+        : init.body;
+    }
+    if (init.body instanceof FormData) return '[FormData]';
+    if (init.body instanceof URLSearchParams) {
+      const s = init.body.toString();
+      return s.length > BODY_MAX_LENGTH ? s.substring(0, BODY_MAX_LENGTH) + '...[truncated]' : s;
+    }
+    if (init.body instanceof ArrayBuffer || init.body instanceof Uint8Array) {
+      return `[Binary: ${(init.body as ArrayBuffer).byteLength} bytes]`;
+    }
+    return '[Body]';
+  } catch {
+    return null;
+  }
+}
+
+/** Clone response and read body for tracking (truncated) */
+async function getResponseBodyForTracking(response: Response): Promise<string | null> {
+  try {
+    const clone = response.clone();
+    const text = await clone.text();
+    return text.length > BODY_MAX_LENGTH
+      ? text.substring(0, BODY_MAX_LENGTH) + '...[truncated]'
+      : text;
+  } catch {
+    return null;
+  }
+}
+
+/** Response headers as plain object */
+function getResponseHeadersMap(response: Response): Record<string, string> {
+  const out: Record<string, string> = {};
+  response.headers.forEach((value, key) => {
+    out[key] = value;
+  });
+  return out;
+}
+
 /**
  * Track a fetch request manually
- * Auto-initializes SDK if not already done
+ * Auto-initializes SDK if not already done.
+ * Captures request/response headers and bodies for OutboundIQ.
  */
 export async function trackFetch(
   input: RequestInfo | URL,
   init?: RequestInit & { userContext?: UserContext }
 ): Promise<Response> {
-  // Auto-initialize if needed
   const initialized = ensureInitialized();
-  
+
   const startTime = performance.now();
-  const url = typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
+  const url =
+    typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
   const method = init?.method || 'GET';
   const userContext = init?.userContext;
 
-  // Remove our custom property before passing to fetch
+  const requestHeaders = extractRequestHeaders(input, init);
+  const requestBody = getRequestBodyFromInit(init);
+
   const fetchInit = init ? { ...init } : undefined;
   if (fetchInit) {
     delete (fetchInit as any).userContext;
@@ -107,17 +193,19 @@ export async function trackFetch(
     const response = await fetch(input, fetchInit);
     const duration = performance.now() - startTime;
 
-    // Track the call if initialized
     if (initialized) {
+      const responseBody = await getResponseBodyForTracking(response);
       track({
         method: method.toUpperCase(),
         url,
         statusCode: response.status,
         duration,
+        requestHeaders: sanitizeHeaders(requestHeaders),
+        responseHeaders: sanitizeHeaders(getResponseHeadersMap(response)),
+        requestBody: safeStringify(requestBody, BODY_MAX_LENGTH),
+        responseBody: safeStringify(responseBody, BODY_MAX_LENGTH),
         userContext: userContext || null,
       });
-      
-      // Flush immediately for serverless (request may end soon)
       await coreFlush();
     }
 
@@ -131,10 +219,11 @@ export async function trackFetch(
         url,
         statusCode: 0,
         duration,
+        requestHeaders: sanitizeHeaders(requestHeaders),
+        requestBody: safeStringify(requestBody, BODY_MAX_LENGTH),
         error: error instanceof Error ? error.message : 'Unknown error',
         userContext: userContext || null,
       });
-      
       await coreFlush();
     }
 
@@ -496,7 +585,7 @@ export function addAxiosTracking(
     (error: any) => Promise.reject(error)
   );
 
-  // Response interceptor - track successful calls
+  // Response interceptor - track successful calls (with request/response body and headers)
   axiosInstance.interceptors.response.use(
     async (response: AxiosResponse) => {
       const duration = response.config.metadata?.startTime
@@ -504,12 +593,18 @@ export function addAxiosTracking(
         : 0;
 
       const url = buildAxiosUrl(response.config);
+      const requestHeaders = (response.config.headers as Record<string, string>) || {};
+      const responseHeaders = (response.headers as Record<string, string>) || {};
 
       track({
         method: (response.config.method || 'GET').toUpperCase(),
         url,
         statusCode: response.status,
         duration,
+        requestHeaders: sanitizeHeaders(requestHeaders),
+        responseHeaders: sanitizeHeaders(responseHeaders),
+        requestBody: safeStringify(response.config.data, BODY_MAX_LENGTH),
+        responseBody: safeStringify(response.data, BODY_MAX_LENGTH),
         userContext: options?.userContext || null,
       });
 
@@ -524,12 +619,18 @@ export function addAxiosTracking(
         : 0;
 
       const url = error.config ? buildAxiosUrl(error.config) : 'unknown';
+      const requestHeaders = (error.config?.headers as Record<string, string>) || {};
+      const responseHeaders = (error.response?.headers as Record<string, string>) || {};
 
       track({
         method: (error.config?.method || 'GET').toUpperCase(),
         url,
         statusCode: error.response?.status || 0,
         duration,
+        requestHeaders: sanitizeHeaders(requestHeaders),
+        responseHeaders: sanitizeHeaders(responseHeaders),
+        requestBody: safeStringify(error.config?.data, BODY_MAX_LENGTH),
+        responseBody: safeStringify(error.response?.data, BODY_MAX_LENGTH),
         error: error.message,
         userContext: options?.userContext || null,
       });

@@ -1,4 +1,4 @@
-import { UserContext } from '@outboundiq/core';
+import { UserContext } from '@outbound_iq/core';
 
 /**
  * Request context using AsyncLocalStorage

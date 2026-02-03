@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { UserContext } from '@outboundiq/core';
+import { UserContext } from '@outbound_iq/core';
 
 /**
  * @outboundiq/nextjs/middleware

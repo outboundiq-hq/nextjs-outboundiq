@@ -1,5 +1,5 @@
-import { init, getClient } from '@outboundiq/core';
-import { setUserContextResolver, register } from '@outboundiq/core/node';
+import { init, getClient } from '@outbound_iq/core';
+import { setUserContextResolver, register } from '@outbound_iq/core/node';
 import { AsyncLocalStorage } from 'async_hooks';
 
 // src/register.ts
