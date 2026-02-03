@@ -90,7 +90,8 @@ export function initEdge(config?: Partial<OutboundIQConfig>): void {
   isInitialized = true;
 }
 
-const BODY_MAX_LENGTH = 10000;
+/** Max chars for request/response body capture (~60k to fit MySQL TEXT; use MEDIUMTEXT migration for larger) */
+const BODY_MAX_LENGTH = 60_000;
 
 /** Extract request headers from input and init */
 function extractRequestHeaders(

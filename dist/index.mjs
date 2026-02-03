@@ -133,7 +133,7 @@ function initEdge(config) {
   });
   isInitialized = true;
 }
-var BODY_MAX_LENGTH = 1e4;
+var BODY_MAX_LENGTH = 6e4;
 function extractRequestHeaders(input, init3) {
   const headers = {};
   if (init3?.headers) {
