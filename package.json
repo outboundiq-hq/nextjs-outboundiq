@@ -1,6 +1,6 @@
 {
   "name": "@outbound_iq/nextjs",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "OutboundIQ SDK for Next.js - Automatic tracking of all outbound API calls",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -25,6 +25,16 @@
       "types": "./dist/edge.d.ts",
       "import": "./dist/edge.mjs",
       "require": "./dist/edge.js"
+    },
+    "./node": {
+      "types": "./dist/node.d.ts",
+      "import": "./dist/node.mjs",
+      "require": "./dist/node.js"
+    },
+    "./context": {
+      "types": "./dist/context.d.ts",
+      "import": "./dist/context.mjs",
+      "require": "./dist/context.js"
     }
   },
   "files": [

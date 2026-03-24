@@ -43,6 +43,22 @@ module.exports = nextConfig;
 
 **Done!** All outbound API calls are now automatically tracked.
 
+## Imports (important for Next.js)
+
+The **root** package (`import { init, track } from '@outbound_iq/nextjs'`) only re-exports **browser-safe** APIs from `@outbound_iq/core`. It must **not** pull in Node builtins such as `module` or `async_hooks`, so your Client Components and shared `apiClient` can import it safely.
+
+**Server-only** features use explicit subpaths (do **not** rely on the root barrel for these):
+
+| Subpath | Use |
+|---------|-----|
+| `@outbound_iq/nextjs/register` | `instrumentation.ts` (Node runtime tracking) |
+| `@outbound_iq/nextjs/middleware` | `middleware.ts` (user context headers) |
+| `@outbound_iq/nextjs/edge` | Edge runtime / manual `trackFetch`, etc. |
+| `@outbound_iq/nextjs/node` | Advanced: `patchNodeHttp`, `setUserContextResolver` |
+| `@outbound_iq/nextjs/context` | Advanced: `runWithContext`, AsyncLocalStorage helpers |
+
+If you previously imported `withOutboundIQ`, `trackFetch`, or Node patch helpers from `@outbound_iq/nextjs` directly, switch to the subpath in the table above.
+
 ## Configuration
 
 ```bash

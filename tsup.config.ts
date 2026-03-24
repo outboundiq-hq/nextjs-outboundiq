@@ -6,6 +6,8 @@ export default defineConfig({
     register: 'src/register.ts',
     middleware: 'src/middleware.ts',
     edge: 'src/edge.ts',
+    node: 'src/node.ts',
+    context: 'src/context.ts',
   },
   format: ['cjs', 'esm'],
   dts: true,
