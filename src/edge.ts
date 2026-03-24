@@ -31,6 +31,7 @@ import {
   type OutboundIQConfig,
   type UserContext,
 } from '@outbound_iq/core';
+import { isOutboundIQEnabled } from './env';
 
 let isInitialized = false;
 
@@ -47,6 +48,10 @@ function ensureInitialized(): boolean {
 
   if (!apiKey) {
     console.warn('[OutboundIQ] Missing OUTBOUNDIQ_KEY environment variable');
+    return false;
+  }
+
+  if (!isOutboundIQEnabled()) {
     return false;
   }
 
@@ -74,6 +79,10 @@ export function initEdge(config?: Partial<OutboundIQConfig>): void {
 
   if (!apiKey) {
     console.warn('[OutboundIQ] Missing API key for edge runtime');
+    return;
+  }
+
+  if (!isOutboundIQEnabled()) {
     return;
   }
 

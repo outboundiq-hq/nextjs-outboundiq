@@ -20,6 +20,11 @@
 import { init, getClient, setUserContext } from '@outbound_iq/core';
 import { register as registerNode, setUserContextResolver } from '@outbound_iq/core/node';
 import { getCurrentUserContext } from './context/request-context';
+import {
+  getOutboundIQFlushIntervalFromEnv,
+  getOutboundIQMaxItemsFromEnv,
+  isOutboundIQEnabled,
+} from './env';
 
 // Get config from environment
 const apiKey = process.env.OUTBOUNDIQ_KEY;
@@ -29,6 +34,10 @@ if (!apiKey) {
     '[OutboundIQ] Missing OUTBOUNDIQ_KEY environment variable. ' +
     'Tracking will be disabled.'
   );
+} else if (!isOutboundIQEnabled()) {
+  console.log(
+    '[OutboundIQ] Tracking disabled (OUTBOUNDIQ_ENABLED is false).'
+  );
 } else {
   // Initialize the client
   // Note: projectId is determined from API key on the backend
@@ -36,8 +45,8 @@ if (!apiKey) {
     apiKey,
     endpoint: process.env.OUTBOUNDIQ_URL,
     debug: process.env.OUTBOUNDIQ_DEBUG === 'true',
-    batchSize: parseInt(process.env.OUTBOUNDIQ_BATCH_SIZE || '10', 10),
-    flushInterval: parseInt(process.env.OUTBOUNDIQ_FLUSH_INTERVAL || '5000', 10),
+    batchSize: getOutboundIQMaxItemsFromEnv(),
+    flushInterval: getOutboundIQFlushIntervalFromEnv(),
   });
 
   // Set up user context resolver to use AsyncLocalStorage

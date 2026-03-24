@@ -3,6 +3,18 @@
 var core = require('@outbound_iq/core');
 
 // src/edge.ts
+
+// src/env.ts
+function parseEnabled(raw) {
+  if (raw === void 0 || raw === "") {
+    return true;
+  }
+  const v = raw.toLowerCase().trim();
+  return !["false", "0", "no", "off"].includes(v);
+}
+function isOutboundIQEnabled() {
+  return parseEnabled(process.env.OUTBOUNDIQ_ENABLED);
+}
 var isInitialized = false;
 function ensureInitialized() {
   if (isInitialized || core.getClient()) {
@@ -12,6 +24,9 @@ function ensureInitialized() {
   const endpoint = process.env.OUTBOUNDIQ_URL;
   if (!apiKey) {
     console.warn("[OutboundIQ] Missing OUTBOUNDIQ_KEY environment variable");
+    return false;
+  }
+  if (!isOutboundIQEnabled()) {
     return false;
   }
   core.init({
@@ -31,6 +46,9 @@ function initEdge(config) {
   const apiKey = config?.apiKey || process.env.OUTBOUNDIQ_KEY;
   if (!apiKey) {
     console.warn("[OutboundIQ] Missing API key for edge runtime");
+    return;
+  }
+  if (!isOutboundIQEnabled()) {
     return;
   }
   core.init({
