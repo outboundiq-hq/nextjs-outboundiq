@@ -63,15 +63,21 @@ The **root** package (`import { init, track } from '@outbound_iq/nextjs'`) only 
 |---------|-----|
 | `@outbound_iq/nextjs/register` | `instrumentation.ts` (Node runtime tracking) |
 | `@outbound_iq/nextjs/middleware` | `middleware.ts` (user context headers) |
-| `@outbound_iq/nextjs/edge` | Edge runtime / manual `trackFetch`, etc. |
+| `@outbound_iq/nextjs/edge` | Edge runtime, `trackFetch`, **`addAxiosTracking` / `createTrackedAxios`** (use this path — not the package root) |
 | `@outbound_iq/nextjs/node` | Advanced: `patchNodeHttp`, `setUserContextResolver` |
 | `@outbound_iq/nextjs/context` | Advanced: `runWithContext`, AsyncLocalStorage helpers |
 
 If you previously imported `withOutboundIQ`, `trackFetch`, or Node patch helpers from `@outbound_iq/nextjs` directly, switch to the subpath in the table above.
 
+**Client-side axios** (e.g. shared `apiClient`): the root package does not export tracking helpers; import from `edge`:
+
+```typescript
+import { addAxiosTracking } from '@outbound_iq/nextjs/edge';
+```
+
 ## Configuration
 
-For a normal setup you only need **`OUTBOUNDIQ_KEY`**. The SDK already defaults the ingest URL to `https://agent.outboundiq.dev/api/metric`, keeps debug logging **off**, and treats monitoring as **enabled** unless you set `OUTBOUNDIQ_ENABLED=false`.
+For a normal setup you only need **`OUTBOUNDIQ_KEY`**. The SDK defaults the ingest URL, keeps debug logging **off**, and treats monitoring as **enabled** unless you set `OUTBOUNDIQ_ENABLED=false`.
 
 Set the variables below only when you need to override those defaults (custom agent URL, troubleshooting, or batch tuning).
 
@@ -79,11 +85,11 @@ Set the variables below only when you need to override those defaults (custom ag
 # Required in production
 OUTBOUNDIQ_KEY=your-api-key
 
-# Optional — only if your metrics must go somewhere other than the default URL above
-OUTBOUNDIQ_URL=https://your-agent.example.com/api/metric
-
 # Optional — default true; set false to disable without removing the key
 OUTBOUNDIQ_ENABLED=true
+
+# Optional — non-default ingest URL only (otherwise the SDK uses the hosted default)
+# OUTBOUNDIQ_URL=https://your-ingest.example.com/api/metric
 
 # Optional — verbose SDK logging (default: off). Use when debugging delivery or batching.
 OUTBOUNDIQ_DEBUG=true
