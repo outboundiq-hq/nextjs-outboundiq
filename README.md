@@ -1,11 +1,11 @@
-# @outboundiq/nextjs
+# @outbound_iq/nextjs
 
 Next.js integration for OutboundIQ - Third-party API monitoring and analytics.
 
 ## Installation
 
 ```bash
-npm install @outboundiq/nextjs
+npm install @outbound_iq/nextjs
 ```
 
 ## Quick Start
@@ -23,7 +23,7 @@ Create `instrumentation.ts` in your project root:
 ```typescript
 export async function register() {
   if (process.env.NEXT_RUNTIME === 'nodejs') {
-    await import('@outboundiq/nextjs/register');
+    await import('@outbound_iq/nextjs/register');
   }
 }
 ```
@@ -62,7 +62,7 @@ Track which user made each API call:
 
 ```typescript
 // middleware.ts
-import { withOutboundIQ } from '@outboundiq/nextjs/middleware';
+import { withOutboundIQ } from '@outbound_iq/nextjs/middleware';
 import { NextResponse } from 'next/server';
 
 export default withOutboundIQ(async (request) => {
@@ -77,7 +77,7 @@ export const config = {
 ### With NextAuth
 
 ```typescript
-import { withOutboundIQ } from '@outboundiq/nextjs/middleware';
+import { withOutboundIQ } from '@outbound_iq/nextjs/middleware';
 import { getToken } from 'next-auth/jwt';
 
 export default withOutboundIQ(async (request) => {
